@@ -3,18 +3,12 @@ from django.utils.html import mark_safe
 from . import models
 
 
-# Register your models here.
-
-
 @admin.register(models.RoomType, models.Facility, models.Amenity, models.HouseRule)
 class ItemAdmin(admin.ModelAdmin):
 
     """ Item Admin Definition """
 
-    list_display = (
-        "name",
-        "used_by",
-    )
+    list_display = ("name", "used_by")
 
     def used_by(self, obj):
         return obj.rooms.count()
@@ -22,32 +16,30 @@ class ItemAdmin(admin.ModelAdmin):
     pass
 
 
+class PhotoInline(admin.TabularInline):
+
+    model = models.Photo
+
+
 @admin.register(models.Room)
 class RoomAdmin(admin.ModelAdmin):
 
-    """Room Admin Definition """
+    """ Room Admin Definition """
+
+    inlines = (PhotoInline,)
 
     fieldsets = (
         (
             "Basic Info",
-            {"fields": ("name", "description", "country", "address", "price")},
+            {"fields": ("name", "description", "country", "city", "address", "price")},
         ),
-        (
-            "Times",
-            {"fields": ("check_in", "check_out", "instant_book")},
-        ),
-        (
-            "Spaces",
-            {"fields": ("guests", "beds", "bedrooms", "baths")},
-        ),
+        ("Times", {"fields": ("check_in", "check_out", "instant_book")}),
+        ("Spaces", {"fields": ("guests", "beds", "bedrooms", "baths")}),
         (
             "More About the Space",
-            {
-                "classes": ("collapse",),
-                "fields": ("amenities", "facilities", "house_rules"),
-            },
+            {"fields": ("amenities", "facilities", "house_rules")},
         ),
-        ("Last Detail", {"fields": ("host",)}),
+        ("Last Details", {"fields": ("host",)}),
     )
 
     list_display = (
@@ -56,6 +48,7 @@ class RoomAdmin(admin.ModelAdmin):
         "city",
         "price",
         "guests",
+        "beds",
         "bedrooms",
         "baths",
         "check_in",
@@ -65,8 +58,6 @@ class RoomAdmin(admin.ModelAdmin):
         "count_photos",
         "total_rating",
     )
-
-    ordering = ("name", "price", "bedrooms")
 
     list_filter = (
         "instant_book",
@@ -79,13 +70,11 @@ class RoomAdmin(admin.ModelAdmin):
         "country",
     )
 
+    raw_id_fields = ("host",)
+
     search_fields = ("=city", "^host__username")
 
-    filter_horizontal = (
-        "amenities",
-        "facilities",
-        "house_rules",
-    )
+    filter_horizontal = ("amenities", "facilities", "house_rules")
 
     def count_amenities(self, obj):
         return obj.amenities.count()
@@ -97,11 +86,11 @@ class RoomAdmin(admin.ModelAdmin):
 @admin.register(models.Photo)
 class PhotoAdmin(admin.ModelAdmin):
 
-    """ Photo Admin Definition """
+    """ Phot Admin Definition """
 
     list_display = ("__str__", "get_thumbnail")
 
     def get_thumbnail(self, obj):
         return mark_safe(f'<img width="50px" src="{obj.file.url}" />')
 
-    get_thumbnail.short_description = "Thumnail"
+    get_thumbnail.short_description = "Thumbnail"
