@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "==2.2.5"
+django = "==3.1.7"
 flake8 = "*"
 wheel = "*"
 black = "*"
@@ -17,7 +17,7 @@ flake8 = "*"
 black = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.8.5"
 
 [pipenv]
 allow_prereleases = true
